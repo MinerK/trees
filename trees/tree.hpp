@@ -9,20 +9,17 @@ private:
         T data;
         Node* left;
         Node* right;
+		short balance;
         Node()
         {
             left = nullptr;
             right = nullptr;
+			balance = 0;
         }
         Node(K k, T d) : Node()
         {
             key = k;
             data = d;
-        }
-        Node(const Node& c) : Node(c.key, c.data)
-        {
-            left = c.left;
-            right = c.right;
         }
     };
     Node* root;
@@ -35,11 +32,18 @@ public:
     ~tree();
     
     void insert(K, T);
-    void deletenode(K);
-    bool intree(K);
+	void insert(K, T, Node*&, bool&);
+	Node* locate(K, Node*);
     bool eq(K, K);
     T search(K);
-    
-    
-    
+	void traverse(void(*f)(K k, T d));
+	void traverse(void(*f)(Node *));
+	void _traverse(Node*,void(*f)(K k, T d));
+	void _traverse(Node*, void(*f)(Node*));
+
+	unsigned int height(Node*);
+	void printinfo();
+	void _Balance(Node* );
+	void Balance();
+
 };
