@@ -48,7 +48,7 @@ typename tree<K, T>::Node * tree<K, T>::locate(K k, Node* t)
 
 
 template <class K, class T>
-void tree<K, T>::insert(K k, T d)
+void tree<K, T>::Add(K k, T d)
 {
     bool h = root == nullptr;
     insert(k, d, root, h);
@@ -149,18 +149,18 @@ void tree<K, T>::insert(K k, T d, Node *& p, bool & h)
 }
 
 template<class K, class T>
-T tree<K,T>::search(K k)
+T tree<K,T>::Find(K k)
 {
     Node* node = locate(k, root);
     if (node != nullptr)
-        return node;
+        return node->data;
     else
         throw "not found";
     
 }
 
 template<class K, class T>
-void tree<K, T>::traverse(void(*f)(K k, T d))
+void tree<K, T>::Traverse(void(*f)(K k, T d))
 {
     _traverse(root, f);
 }
@@ -217,9 +217,9 @@ unsigned int tree<K, T>::height(Node *target)
 }
 
 template<class K, class T>
-void tree<K, T>::printinfo()
+void tree<K, T>::Print()
 {
-    traverse([](Node* s) {std::cout << s->key << " : " << s->data << "; " << s->balance << std::endl; });
+    traverse([](Node* s) {std::cout << s->key << " : " << s->data << ";" << std::endl; });
 }
 
 template <class K, class T>
@@ -341,16 +341,66 @@ void tree<K, T>::BalanceR(Node*& p, bool& h)
 }
 
 template<class K, class T>
-void tree<K,T>::del(<#tree::Node *&#> r, <#bool &#> h)
+void tree<K,T>::del(Node *& r, bool & h, Node*& q)
 {
     if (r->right)
     {
-        del(r->right, h);
+        del(r->right, h, q);
         if (h)
-            balanceR(r,h);
+            BalanceR(r,h);
     }
-    else
+	else
+	{
+		q->key = r->key;
+		q->data = r->data;
+		q = r;
+		r = r->left;
+		h = true;
+	}
+}
 
+template<class K, class T>
+void tree<K, T>::_delete(K k, Node *& p, bool &h)
+{
+	Node* q;
+	if (p)
+	{
+		if (rule(k, p->key) )
+		{
+			_delete(k, p->left, h);
+			if (h)
+				BalanceL(p, h);
+		}
+		else
+			if (rule(p->key, k))
+			{
+				_delete(k, p->right, h);
+				if (h)
+					BalanceR(p, h);
+			}
+			else
+			{
+				q = p;
+				if (q->right == nullptr)
+				{
+					p = q->left;
+					h = true;
+				}
+				else
+					if (q->left == nullptr)
+					{
+						p = q->right;
+						h = true;
+					}
+					else
+					{
+						del(q->left, h, q);
+						if (h)
+							BalanceL(p, h);
+					}
+				delete q;
+			}
+	}
 }
 
 template<class K, class T>
@@ -358,5 +408,15 @@ void tree<K,T>::Remove(K k)
 {
     bool h=false;
     _delete(k, root, h);
+}
+
+template<class K, class T>
+void tree<K, T>::Change(K k, T d)
+{
+	Node* nd = locate(k, root);
+	if (nd)
+		nd->data = d;
+	else
+		throw "not found";
 }
 
